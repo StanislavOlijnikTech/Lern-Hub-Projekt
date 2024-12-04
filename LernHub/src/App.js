@@ -9,7 +9,7 @@ const { Title } = Typography;
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
-  
+
   const addTask = (taskName, taskDescription) => {
     setTasks([...tasks, { name: taskName, description: taskDescription, progress: 0 }]);
   };
