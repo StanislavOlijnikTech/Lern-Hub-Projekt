@@ -1,54 +1,71 @@
-import React from 'react';
-import { Layout, Menu } from 'antd';
+import React, { useState } from 'react';
+import { Layout, Button, Row, Col, Typography, Space } from 'antd';
+import TaskInput from './components/TaskInput';
+import TaskCard from './components/TaskCard';
+import './App.css'; // Hier kannst du zusätzliche Styles definieren
 
 const { Header, Content, Footer } = Layout;
+const { Title } = Typography;
 
 const App = () => {
-  const menuItems = [
-    { key: '1', label: <a href="#profil">Profil</a> },
-    { key: '2', label: <a href="#projekte">Projekte</a> },
-    { key: '3', label: <a href="#kontakt">Kontakt</a> },
-  ];
+  const [tasks, setTasks] = useState([]);
+  
+  const addTask = (taskName, taskDescription) => {
+    setTasks([...tasks, { name: taskName, description: taskDescription, progress: 0 }]);
+  };
+
+  const handleProgress = (index) => {
+    const updatedTasks = [...tasks];
+    if (updatedTasks[index].progress < 100) {
+      updatedTasks[index].progress += 25;
+    }
+    setTasks(updatedTasks);
+  };
+
+  const deleteTask = (index) => {
+    const updatedTasks = tasks.filter((task, taskIndex) => taskIndex !== index);
+    setTasks(updatedTasks);
+  };
+
+  const editTask = (index, newName, newDescription) => {
+    const updatedTasks = [...tasks];
+    updatedTasks[index] = { ...updatedTasks[index], name: newName, description: newDescription };
+    setTasks(updatedTasks);
+  };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      {/* Header mit Navigation */}
+    <Layout>
       <Header style={{ background: '#1890ff', padding: '0 20px' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <h1 style={{ color: '#fff', margin: 0 }}>LernHub</h1>
-          <Menu
-            theme="dark"
-            mode="horizontal"
-            items={menuItems}
-            style={{ background: '#1890ff', borderBottom: 'none' }}
-          />
-        </div>
+        <Title level={3} style={{ color: 'white', float: 'left' }}>LernHub</Title>
+        <Space style={{ float: 'right' }}>
+          <Button type="link" style={{ color: 'white' }}>Profil</Button>
+          <Button type="link" style={{ color: 'white' }}>Impressum</Button>
+        </Space>
       </Header>
 
-      {/* Hauptinhalt */}
-      <Content style={{ padding: '20px', textAlign: 'center' }}>
-        <section id="profil" style={{ marginTop: '20px' }}>
-          <h2>Willkommen bei LernHub</h2>
-          <p>Hier kannst du deine Lernkurse verwalten.</p>
-        </section>
-        <section id="projekte" style={{ marginTop: '40px' }}>
-          <h2>Projekte</h2>
-          <p>Eine Liste deiner Projekte wird hier angezeigt.</p>
-        </section>
-        <section id="kontakt" style={{ marginTop: '40px' }}>
-          <h2>Kontakt</h2>
-          <p>Hier kannst du uns kontaktieren.</p>
-        </section>
+      <Content style={{ padding: '20px' }}>
+        <Row gutter={16}>
+          <Col span={24}>
+            <TaskInput onAddTask={addTask} />
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          {tasks.map((task, index) => (
+            <Col key={index} span={8}>
+              <TaskCard
+                task={task}
+                onProgress={() => handleProgress(index)}
+                onDelete={() => deleteTask(index)}
+                onEdit={(newName, newDescription) => editTask(index, newName, newDescription)}
+              />
+            </Col>
+          ))}
+        </Row>
       </Content>
 
-      {/* Footer */}
-      <Footer style={{ textAlign: 'center' }}>LernHub ©2023</Footer>
+      <Footer style={{ textAlign: 'center' }}>
+        LernHub ©2024
+      </Footer>
     </Layout>
   );
 };
