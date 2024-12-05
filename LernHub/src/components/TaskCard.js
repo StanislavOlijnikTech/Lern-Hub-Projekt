@@ -1,7 +1,10 @@
+// components/TaskCard.js
+
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Space, Modal, Input } from 'antd';
+import TaskDatePicker from './TaskDatePicker'; // TaskDatePicker importieren
 
-const TaskCard = ({ task, onProgress, onDelete, onEdit }) => {
+const TaskCard = ({ task, onProgress, onDelete, onEdit, onDateChange }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(task.name);
   const [newDescription, setNewDescription] = useState(task.description);
@@ -11,7 +14,7 @@ const TaskCard = ({ task, onProgress, onDelete, onEdit }) => {
     setIsEditing(false);
   };
 
-  // Funktion zum Zeichnen des Fortschrittsdiagramms
+  // Funktion zum Zeichnen des Tortendiagramms
   const drawProgressChart = (progress) => {
     const canvas = document.getElementById(`progress-chart-${task.name}`);
     if (!canvas) return;
@@ -38,7 +41,7 @@ const TaskCard = ({ task, onProgress, onDelete, onEdit }) => {
   // Zeichne das Diagramm nach jeder Änderung des Fortschritts
   useEffect(() => {
     drawProgressChart(task.progress);
-  }, );
+  }, [task.progress]); // Abhängig vom Fortschritt
 
   return (
     <Card
@@ -47,7 +50,8 @@ const TaskCard = ({ task, onProgress, onDelete, onEdit }) => {
       style={{ width: '100%' }}
     >
       <p>{task.description}</p>
-      {/* Donut-Diagramm anzeigen */}
+
+      {/* Tortendiagramm */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <canvas
           id={`progress-chart-${task.name}`}
@@ -56,6 +60,15 @@ const TaskCard = ({ task, onProgress, onDelete, onEdit }) => {
           style={{ borderRadius: '50%' }}
         ></canvas>
       </div>
+
+      {/* Fälligkeitsdatum */}
+      <div>
+        <strong>Fälligkeitsdatum:</strong> {task.dueDate ? task.dueDate : 'Nicht gesetzt'}
+      </div>
+
+      {/* Hier den TaskDatePicker verwenden */}
+      <TaskDatePicker value={task.dueDate} onChange={(date) => onDateChange(date)} />
+
       <Space style={{ marginTop: '10px' }}>
         <Button type="primary" onClick={onProgress} disabled={task.progress === 100}>
           {task.progress === 100 ? 'Erledigt' : 'Fortschritt erhöhen'}
